@@ -1,0 +1,3 @@
+# coranum
+
+Collect random number.
