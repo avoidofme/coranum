@@ -4,9 +4,12 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-col = {}
 
 limit = 8
+
+col = {}
+for i in range(1 << limit):
+    col.update({i: 0})
 
 
 @app.get("/")
@@ -36,12 +39,5 @@ async def get_roll():
         "rolled": bin(n)[2:].ljust(limit, "0"),
         "number": n,
         "limit": (1 << limit) - 1,
-        "col": get_collections(),
+        "col": col,
     }
-
-
-def get_collections():
-    c = {}
-    for i in range(1 << limit):
-        c.update({i: col.get(i) if col.get(i) else 0})
-    return c
