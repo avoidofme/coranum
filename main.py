@@ -1,6 +1,7 @@
 from random import randint
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from sqlmodel import SQLModel
 
 app = FastAPI()
 
@@ -41,3 +42,44 @@ async def get_roll():
         "limit": (1 << limit) - 1,
         "col": col,
     }
+
+
+@app.get("/ops")
+async def get_ops():
+    return "add, sub, mult, div, mod"
+
+
+class Ops(SQLModel):
+    fnum: int
+    snum: int
+
+
+@app.post("/ops/{op}")
+async def get_op(op: str, data: Ops):
+    if op in ["div", "mod"] and data.snum == 0:
+        raise HTTPException(400, "can't do")
+    res = f"Hellow {op}"
+    match op:
+        case "add":
+            res = data.fnum + data.snum
+        case "sub":
+            res = data.fnum - data.snum
+        case "mult":
+            res = data.fnum * data.snum
+        case "div":
+            res = data.fnum // data.snum
+        case "mod":
+            res = data.fnum % data.snum
+        case _:
+            raise HTTPException(400, "check /ops")
+    return res
+
+
+@app.get("/trade")
+async def get_trade():
+    return "Hellow trade"
+
+
+@app.get("/up")
+async def get_up():
+    return "HEllow up"
